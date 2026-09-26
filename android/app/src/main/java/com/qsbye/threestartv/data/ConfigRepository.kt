@@ -64,26 +64,31 @@ class ConfigRepository(context: Context) {
     val existing = _camera.value.items.find { it.id == id }
     if (existing != null) return existing
     val created = CameraItem(id = id)
-    _camera.update { it.items.add(created); it }
+    _camera.update { it.copy(items = (it.items + created).toMutableList()) }
     return created
   }
 
   fun updateCamera(transform: (CameraConfig) -> Unit) {
-    _camera.update {
-      transform(it)
-      it.count = it.count.coerceIn(1, 16)
-      it.delay = it.delay.coerceAtLeast(0)
-      it
+    // 必须在快照副本（含 items 深拷贝）上修改：原地改写同一实例会让
+    // MutableStateFlow 的去重判定认为值未变化而抑制发射，UI 将停留在旧状态。
+    _camera.update { current ->
+      val snapshot = current.copy(items = current.items.map { it.copy() }.toMutableList())
+      transform(snapshot)
+      snapshot.count = snapshot.count.coerceIn(1, 16)
+      snapshot.delay = snapshot.delay.coerceAtLeast(0)
+      snapshot
     }
     save(CameraFile, _camera.value)
   }
 
   fun updateApp(transform: (AppConfig) -> Unit) {
-    _app.update {
-      transform(it)
-      if (it.language != "en") it.language = "zh"
-      if (it.theme != "dark") it.theme = "light"
-      it
+    // 同理：在 copy() 出的新实例上修改，确保 StateFlow 发射、UI 即时重组。
+    _app.update { current ->
+      val snapshot = current.copy()
+      transform(snapshot)
+      if (snapshot.language != "en") snapshot.language = "zh"
+      if (snapshot.theme != "dark") snapshot.theme = "light"
+      snapshot
     }
     save(AppFile, _app.value)
   }
