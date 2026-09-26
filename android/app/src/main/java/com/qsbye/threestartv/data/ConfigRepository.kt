@@ -17,6 +17,7 @@ class ConfigRepository(context: Context) {
     const val DefaultStreamUrl =
       "https://ldncctvwbcdbd.a.bdydns.com/ldncctvwbcd/cdrmldcctv1_1/index.m3u8"
     const val FallbackWebUrl = "https://tv.cctv.com/live/cctv1/"
+    const val DefaultWebUrl = "https://tv.cctv.com/live/cctv5/"
 
     private const val CameraFile = "CameraConfig.json"
     private const val AppFile = "AppConfig.json"
@@ -26,7 +27,7 @@ class ConfigRepository(context: Context) {
       CameraConfig(
         count = 1,
         delay = 0,
-        items = mutableListOf(CameraItem(id = 0, ip = FallbackWebUrl, remark = "CCTV-1")),
+        items = mutableListOf(CameraItem(id = 0, ip = DefaultWebUrl, remark = "CCTV-5")),
       )
 
     fun defaultUrlFavorites() =

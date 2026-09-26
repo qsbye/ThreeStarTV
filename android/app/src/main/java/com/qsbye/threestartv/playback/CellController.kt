@@ -174,6 +174,26 @@ class CellController(
       domStorageEnabled = true
       mediaPlaybackRequiresUserGesture = false // 自动播放
       mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+      // 电脑模式访问：桌面 UA + 宽视口，让网页返回桌面版排版
+      userAgentString =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+        "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+      useWideViewPort = true
+      loadWithOverviewMode = true
+      setSupportZoom(true)
+      builtInZoomControls = false
+    }
+    // 适配视口大小：桌面网页按 980px 布局，按单元格实际宽度算出初始缩放，
+    // 使页面整体恰好缩放进视口（必须在首次 loadUrl 前设置才生效）。
+    // 首次附加或最大化还原后重挂的补载也在此处完成，保证缩放先生效。
+    view.post {
+      if (view.width > 0) {
+        val scale = (view.width * 100f / 980f).toInt().coerceIn(1, 100)
+        view.setInitialScale(scale)
+      }
+      if (_ui.value.mode == CellMode.WEB && _ui.value.url.isNotEmpty()) {
+        view.loadUrl(_ui.value.url)
+      }
     }
     view.webViewClient =
       object : WebViewClient() {
@@ -182,10 +202,6 @@ class CellController(
           onWebPageFinished()
         }
       }
-    // 首次附加或最大化还原后重挂：若当前处于网页模式，补载当前地址
-    if (_ui.value.mode == CellMode.WEB && _ui.value.url.isNotEmpty()) {
-      view.loadUrl(_ui.value.url)
-    }
   }
 
   fun detachWebView(view: WebView) {
