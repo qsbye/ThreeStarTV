@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ThreeStarsTV.Controls.PlayerCell">
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#252526}">
+        <!-- 顶栏：URL / 备注 / 锁定 / 刷新 / 最大化 -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,*,Auto,Auto,Auto" Padding="3,2" ColumnSpacing="2">
+            <Entry x:Name="UrlEntry" Grid.Column="0"
+                   PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}"
+                   TextColor="{AppThemeBinding Light=#333333, Dark=#CCCCCC}"
+                   BackgroundColor="{AppThemeBinding Light=#F7F7F7, Dark=#2D2D30}"
+                   FontSize="12" HeightRequest="34" VerticalOptions="Center"/>
+            <Entry x:Name="RemarkEntry" Grid.Column="1"
+                   PlaceholderColor="{AppThemeBinding Light=#999999, Dark=#666666}"
+                   TextColor="{AppThemeBinding Light=#333333, Dark=#CCCCCC}"
+                   BackgroundColor="{AppThemeBinding Light=#F7F7F7, Dark=#2D2D30}"
+                   FontSize="12" HeightRequest="34" VerticalOptions="Center"/>
+            <Button x:Name="LockBtn" Grid.Column="2" FontSize="12" Padding="6,0" HeightRequest="34"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnLockClicked"/>
+            <Button x:Name="RefreshBtn" Grid.Column="3" FontSize="12" Padding="6,0" HeightRequest="34"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnRefreshClicked"/>
+            <Button x:Name="MaxBtn" Grid.Column="4" FontSize="12" Padding="6,0" HeightRequest="34"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnMaxClicked"/>
+        </Grid>
+
+        <!-- 播放区 -->
+        <Grid Grid.Row="1" BackgroundColor="Black">
+            <WebView x:Name="Web" Navigated="OnWebNavigated"/>
+            <Label x:Name="EmptyHint" IsVisible="False"
+                   TextColor="#888888" FontSize="12"
+                   HorizontalOptions="Center" VerticalOptions="Center"/>
+            <!-- 加载遮罩 -->
+            <Grid x:Name="LoadingMask" IsVisible="False" BackgroundColor="#EB111217">
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6" WidthRequest="200">
+                    <Label x:Name="LoadingText" TextColor="White" FontSize="12" HorizontalTextAlignment="Center"/>
+                    <ProgressBar x:Name="LoadingBar" ProgressColor="#0078D4" HeightRequest="4"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentView>

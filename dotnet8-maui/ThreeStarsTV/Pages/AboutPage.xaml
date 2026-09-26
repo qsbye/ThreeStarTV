@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ThreeStarsTV.Pages.AboutPage"
+             Shell.NavBarIsVisible="False">
+    <Grid RowDefinitions="Auto,Auto,*" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#1E1E1E}">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" HeightRequest="48" Padding="6,0"
+              BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#252526}">
+            <Button x:Name="BackBtn" Grid.Column="0" Text="←" FontSize="18" Padding="6,0"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnBackClicked"/>
+            <Label x:Name="TitleLabel" Grid.Column="1" FontSize="13"
+                   TextColor="{AppThemeBinding Light=#333333, Dark=#CCCCCC}"
+                   VerticalOptions="Center" Margin="4,0,0,0"/>
+        </Grid>
+        <BoxView Grid.Row="1" HeightRequest="1" Color="{AppThemeBinding Light=#D0D0D0, Dark=#3F3F46}"/>
+
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Padding="20" Spacing="12" HorizontalOptions="Center">
+                <Label x:Name="AppTitleLabel" FontSize="22" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#333333, Dark=#CCCCCC}"
+                       HorizontalTextAlignment="Center"/>
+                <Label x:Name="VersionLabel" FontSize="13"
+                       TextColor="{AppThemeBinding Light=#777777, Dark=#888888}"
+                       HorizontalTextAlignment="Center"/>
+                <Label x:Name="DescLabel" FontSize="13" Margin="0,12,0,0"
+                       TextColor="{AppThemeBinding Light=#333333, Dark=#CCCCCC}"/>
+                <Label x:Name="TechLabel" FontSize="11"
+                       TextColor="{AppThemeBinding Light=#777777, Dark=#888888}"/>
+                <Button x:Name="RepoBtn" FontSize="13" Margin="0,16,0,0" Padding="14,8"
+                        BackgroundColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                        TextColor="White" Clicked="OnRepoClicked"/>
+                <Button x:Name="CloseBtn" FontSize="13" Padding="14,8"
+                        BackgroundColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                        TextColor="White" Clicked="OnBackClicked"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

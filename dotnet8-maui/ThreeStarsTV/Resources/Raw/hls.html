@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<style>
+  html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}
+  video{width:100%;height:100%;object-fit:contain;background:#000}
+</style>
+</head>
+<body>
+<video id="v" controls autoplay playsinline></video>
+<script src="hls.min.js"></script>
+<script>
+(function(){
+  var url = __URL__;
+  var muted = __MUTED__;
+  var fallbackUrl = "https://tv.cctv.com/live/cctv1/";
+  var video = document.getElementById('v');
+  video.muted = muted;
+  var failCount = 0;
+  var hls = null;
+
+  function onFail() {
+    failCount++;
+    if (failCount >= 3) {
+      window.location.href = fallbackUrl;
+      return;
+    }
+    setTimeout(function(){ start(); }, 3000);
+  }
+
+  function start() {
+    if (hls) { try { hls.destroy(); } catch(e){} hls = null; }
+    if (window.Hls && Hls.isSupported()) {
+      hls = new Hls({
+        liveDurationInfinity: true,
+        fragLoadingMaxRetry: 2,
+        manifestLoadingMaxRetry: 2,
+        levelLoadingMaxRetry: 2
+      });
+      hls.on(Hls.Events.ERROR, function(evt, data){
+        if (!data) return;
+        if (data.fatal) onFail();
+      });
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function(){
+        video.play().catch(function(){});
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = url;
+      video.addEventListener('error', onFail, { once:false });
+      video.play().catch(function(){});
+    } else {
+      window.location.href = fallbackUrl;
+    }
+  }
+  start();
+})();
+</script>
+</body>
+</html>

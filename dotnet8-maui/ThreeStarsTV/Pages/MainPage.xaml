@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ThreeStarsTV.Controls"
+             x:Class="ThreeStarsTV.Pages.MainPage"
+             Shell.NavBarIsVisible="False">
+    <Grid x:Name="RootGrid" RowDefinitions="Auto,*,Auto"
+          BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#1E1E1E}">
+
+        <!-- 工具栏 -->
+        <Grid x:Name="Toolbar" Grid.Row="0"
+              ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto"
+              Padding="6,0" HeightRequest="48"
+              BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#252526}">
+            <Label x:Name="TitleLabel" Grid.Column="0" FontSize="13"
+                   TextColor="{AppThemeBinding Light=#333333, Dark=#CCCCCC}"
+                   VerticalOptions="Center"/>
+            <Button x:Name="SettingsBtn" Grid.Column="2" FontSize="12" Padding="6,0"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnSettingsClicked"/>
+            <Button x:Name="ThemeBtn" Grid.Column="3" FontSize="12" Padding="6,0"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnThemeClicked"/>
+            <Button x:Name="LangBtn" Grid.Column="4" FontSize="12" Padding="6,0"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnLangClicked"/>
+            <Button x:Name="AboutBtn" Grid.Column="5" FontSize="12" Padding="6,0"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnAboutClicked"/>
+            <Button x:Name="FullscreenBtn" Grid.Column="6" FontSize="12" Padding="6,0"
+                    TextColor="{AppThemeBinding Light=#0078D4, Dark=#91CAFF}"
+                    BackgroundColor="Transparent" Clicked="OnFullscreenClicked"/>
+        </Grid>
+
+        <BoxView Grid.Row="0" HeightRequest="1" VerticalOptions="End"
+                 Color="{AppThemeBinding Light=#D0D0D0, Dark=#3F3F46}"/>
+
+        <!-- 中部：播放网格 -->
+        <Grid x:Name="PlayArea" Grid.Row="1" BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#1E1E1E}">
+            <Grid x:Name="CellsHost"/>
+
+            <!-- 网格全屏模式：悬浮退出按钮 -->
+            <Border x:Name="ExitFullscreenBtn" IsVisible="False"
+                    BackgroundColor="#99FFFFFF"
+                    Padding="8,4" Margin="6"
+                    HorizontalOptions="End" VerticalOptions="Start">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="6"/>
+                </Border.StrokeShape>
+                <Label x:Name="ExitFullscreenLabel" FontSize="12" TextColor="#333"/>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnExitFullscreenTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+        </Grid>
+
+        <!-- 状态栏 -->
+        <Grid x:Name="StatusBar" Grid.Row="2" ColumnDefinitions="Auto,Auto,*"
+              Padding="8,0" HeightRequest="26"
+              BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#252526}">
+            <BoxView Grid.Column="0" HeightRequest="1" VerticalOptions="Start"
+                     Color="{AppThemeBinding Light=#D0D0D0, Dark=#3F3F46}"/>
+            <Label x:Name="TimeLabel" Grid.Column="0" FontSize="11"
+                   TextColor="{AppThemeBinding Light=#777777, Dark=#888888}"
+                   VerticalOptions="Center"/>
+            <Label x:Name="VersionLabel" Grid.Column="1" FontSize="11" Margin="16,0,0,0"
+                   TextColor="{AppThemeBinding Light=#777777, Dark=#888888}"
+                   VerticalOptions="Center"/>
+        </Grid>
+    </Grid>
+</ContentPage>
