@@ -1,4 +1,4 @@
-# ThreeStarTV
+# ThreeStarsTV | 三颗星电视
 
 基于 .NET 8 的 WinForms 电视直播播放软件：启动即自动播放 CCTV-1 高清直播，搭配 .NET Framework 4.8 启动器分发为**单个便携式 exe**（内嵌 .NET 8 运行时安装包 + 主程序），插上就能放电视。
 
@@ -27,8 +27,8 @@
 
 | 部分 | 技术 |
 |---|---|
-| 主程序 `ThreeStarTV/` | .NET 8 WinForms（纯 C#），AntdUI 2.4.10，Microsoft.Web.WebView2，内嵌 hls.js@1 |
-| 启动器 `ThreeStarTV.Launcher/` | .NET Framework 4.8，内嵌运行时安装包与主程序 exe 资源 |
+| 主程序 `ThreeStarsTV/` | .NET 8 WinForms（纯 C#），AntdUI 2.4.10，Microsoft.Web.WebView2，内嵌 hls.js@1 |
+| 启动器 `ThreeStarsTV.Launcher/` | .NET Framework 4.8，内嵌运行时安装包与主程序 exe 资源 |
 | 其他 | FluentFTP（JOBX 备份功能，界面已隐藏保留）、WScript.Shell（开机启动快捷方式） |
 
 启动器工作流程：检测 `Microsoft.WindowsDesktop.App 8.x` → 缺失则静默安装内嵌运行时 → 覆盖释放主程序到 `%LOCALAPPDATA%\ThreeStarTV\App\` 并启动。
@@ -41,7 +41,7 @@
 bash build-with-timestamp.sh
 ```
 
-产物：`dist/ThreeStarTV_<yyyyMMddHHmm>.exe`（单文件，直接拷贝运行）。
+产物：`dist/ThreeStarsTV_<yyyyMMddHHmm>.exe`（单文件，直接拷贝运行）。
 
 ## 部署注意事项
 
