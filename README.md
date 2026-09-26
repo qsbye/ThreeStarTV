@@ -1,29 +1,49 @@
 # ThreeStarTV
 
-基于 .NET 8 的 WinForms 电视直播播放软件：启动即自动播放 CCTV-1 高清直播，搭配 .NET Framework 4.8 启动器分发为**单个便携式 exe**（内嵌 .NET 8 运行时安装包 + 主程序），插上就能放电视。
+电视直播播放软件：启动即自动播放 CCTV-1 直播，插上/装上就能放电视。同一套功能提供三个平台版本：
+
+| 版本 | 位置 | 技术 | 分发形态 |
+|---|---|---|---|
+| **Windows 桌面版** | `ThreeStarTV/`、`ThreeStarTV.Launcher/` | .NET 8 WinForms + WebView2 | 单个便携式 exe（内嵌运行时安装包） |
+| **Android 版** | `android/` | Kotlin + Jetpack Compose + Media3 | APK，兼容 Android 10+ |
+| **macOS 版** | `darwin/` | Swift + SwiftUI + AVKit/WebKit | ThreeStarTV.app，arm64，macOS 13+ |
 
 ## 功能
 
-- **启动即播**：默认自动播放 CCTV-1 直播（m3u8/HLS 流，内嵌 hls.js 播放器，无需联网加载播放器）
-- **失败自动回退**：直播流连续 3 次失败自动切换到央视网网页播放器（`tv.cctv.com/live/cctv1`），并自动点击网页"全屏"按钮
-- **傻瓜式启动设置**（设置 → 软件设置 → 启动设置，全部持久化）：
+- **启动即播**：打开应用自动播放 CCTV-1，无需任何操作
+  - Windows：默认播放 m3u8/HLS 高清流（内嵌 hls.js 播放器，无需联网加载播放器）
+  - Android：默认打开央视网 CCTV-1 网页；m3u8 地址则由 Media3 ExoPlayer 原生播放，其他网址由 WebView 加载
+  - macOS：默认打开央视网 CCTV-1 网页；m3u8 地址由 AVPlayer 原生播放，其他网址由 WKWebView 加载
+- **失败自动回退**：HLS 直播流连续 3 次失败，自动切换到央视网网页播放器（`tv.cctv.com/live/cctv1`），并自动点击网页"全屏"按钮
+- **1–16 路播放网格**：每路可填任意网页或 m3u8 地址，支持备注/锁定/刷新/单格最大化，多路错峰加载
+- **网格全屏模式**（Android / macOS）：隐藏工具栏与状态栏，播放网格铺满整块屏幕，右上角悬浮"退出全屏"按钮；状态持久化，重启后保持
+- **傻瓜式播放设置**（全部持久化）：
   - 自动取消静音（默认开，开机即有声音）
-  - 开机启动（shell:startup 快捷方式，防重复创建、只删自己的快捷方式）
-  - 窗口置顶、启动时最大化
-- **加载提速**：启动后台预热预取（DNS/TLS 握手前置）；全单元格共享 WebView2 环境，央视网页面依赖二次启动起走本地缓存；加载遮罩实时显示"加载中 xxx ms"与进度条
-- **网址收藏**（设置 → 网址收藏）：默认内置 CCTV-1~13 网页地址与 m3u8 推流地址，支持双击编辑、复制到剪贴板、添加/删除，持久化到 `UrlFavorites.json`
-- 1–16 路播放网格：每路可填任意网页或 m3u8 地址，支持备注/锁定/刷新/最大化，错峰加载
-- 中英文界面、明亮/暗黑主题，关闭最小化到系统托盘
-- 配置 JSON 持久化，exe 旁放置 `portable.txt` 即启用便携模式，否则存 `%LOCALAPPDATA%\ThreeStarTV\`
+  - 开机启动（Windows：shell:startup 快捷方式；Android：`BOOT_COMPLETED` 自启；macOS：`SMAppService` 登录项）
+  - 窗口置顶（Windows）/ 屏幕常亮（Android / macOS：电源断言防休眠）
+  - 启动时最大化 / 沉浸式全屏
+- **加载提速**：启动后台预热预取（DNS/TLS 握手前置）；加载遮罩实时显示"加载中 xxx ms"与进度条；Windows 端全单元格共享 WebView2 环境，央视网页面二次启动走本地缓存
+- **网址收藏**：默认内置 CCTV-1~13 网页地址与 m3u8 推流地址，支持编辑、复制到剪贴板、添加/删除
+- 中英文界面、明亮/暗黑主题；Windows 端关闭时最小化到系统托盘
+- 配置以 JSON 持久化，三端字段名一致，配置文件可互导
 
-## 运行截图
+## 目录结构
 
-| 截图 | 说明 |
-|---|---|
-| ![运行截图1](assets/screenshot1.png) | 主界面播放 CCTV-1 |
-| ![运行截图2](assets/screenshot2.png) | 主界面播放 CCTV-1 |
+```
+.
+├── ThreeStarTV/            # Windows 主程序（.NET 8 WinForms）
+├── ThreeStarTV.Launcher/   # Windows 启动器（.NET Framework 4.8）
+├── android/                # Android 版（Kotlin + Compose）
+├── darwin/                 # macOS 版（Swift + SwiftUI，arm64）
+├── assets/                 # 图标与内嵌的 .NET 运行时安装包
+└── build-with-timestamp.sh # Windows 单文件打包脚本
+```
 
-## 技术栈
+---
+
+## Windows 桌面版
+
+### 技术栈
 
 | 部分 | 技术 |
 |---|---|
@@ -33,7 +53,7 @@
 
 启动器工作流程：检测 `Microsoft.WindowsDesktop.App 8.x` → 缺失则静默安装内嵌运行时 → 覆盖释放主程序到 `%LOCALAPPDATA%\ThreeStarTV\App\` 并启动。
 
-## 构建
+### 构建
 
 需要：.NET SDK 8+、MSBuild（Visual Studio 或 .NET Framework 4.8 自带）。
 
@@ -43,8 +63,113 @@ bash build-with-timestamp.sh
 
 产物：`dist/ThreeStarTV_<yyyyMMddHHmm>.exe`（单文件，直接拷贝运行）。
 
-## 部署注意事项
+### 部署注意事项
 
 - 主程序依赖 **WebView2 运行时**；部分精简版 Win10 可能缺失，首次运行需联网下载，或另行部署 WebView2 离线包
 - 启动器内嵌 .NET 8 运行时安装包，完全离线也能完成运行时安装
 - 播放直播流与央视网回退页需要目标机器可访问对应域名
+- exe 旁放置 `portable.txt` 即启用便携模式（配置存 exe 目录），否则存 `%LOCALAPPDATA%\ThreeStarTV\`
+
+---
+
+## Android 版
+
+### 兼容性
+
+- **minSdk 29（Android 10）**，targetSdk / compileSdk 36
+- 横屏运行（`sensorLandscape`，支持正反横屏自动旋转）
+- 测试机：`XPL0219C06017003`（TAS-AN00，Android 12）
+
+### 技术栈
+
+| 部分 | 技术 |
+|---|---|
+| 语言 / UI | Kotlin 2.3，Jetpack Compose（Compose BOM 2026.03，Material 3） |
+| 播放 | AndroidX Media3 1.11（ExoPlayer + HLS 扩展）原生播放 m3u8；WebView 加载网页 |
+| 导航 | Navigation3（NavDisplay） |
+| 配置 | kotlinx.serialization 读写 JSON，字段名与桌面版一致 |
+| 构建 | Gradle + AGP 9，JDK 17 |
+
+### 构建与安装
+
+需要：JDK 17、Android SDK（可用 [android CLI](https://developer.android.com/tools/agents/android-cli?hl=zh-cn) 管理）。
+
+```bash
+cd android
+
+# Debug APK
+./gradlew :app:assembleDebug
+
+# 安装到已连接设备
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+Release APK：`./gradlew :app:assembleRelease`。
+
+### 运行测试
+
+```bash
+./gradlew :app:testDebugUnitTest   # JVM 单元测试：i18n、配置 JSON 字段名兼容
+```
+
+### 配置存储
+
+配置位于应用私有目录（`/data/data/com.qsbye.threestartv/files/`，无需任何权限）：
+
+- `CameraConfig.json`：网格数量、错峰延时、每路地址/备注/锁定状态
+- `AppConfig.json`：语言、主题、自动取消静音、屏幕常亮、启动全屏、开机自启、网格全屏模式
+- `UrlFavorites.json`：网址收藏列表
+
+可通过以下命令查看（调试用）：
+
+```bash
+adb shell run-as com.qsbye.threestartv cat files/AppConfig.json
+```
+
+---
+
+## macOS 版
+
+### 兼容性
+
+- **arm64**（Apple Silicon），最低系统版本 **macOS 13**（Ventura）
+- Bundle ID：`com.qsbye.threestartv`
+
+### 技术栈
+
+| 部分 | 技术 |
+|---|---|
+| 语言 / UI | Swift 5 + SwiftUI（macOS 13 兼容的 API 集） |
+| 播放 | AVPlayer 原生播放 m3u8/HLS（连续 3 次失败回退央视网网页）；WKWebView 加载网页 |
+| 配置 | JSONEncoder/Decoder 读写 JSON，字段名与桌面版、Android 版一致 |
+| 系统集成 | IOKit 电源断言（屏幕常亮）、SMAppService（开机启动登录项） |
+
+### 构建
+
+需要：Xcode（含命令行工具），Apple Silicon Mac。
+
+```bash
+cd darwin
+
+# 方式一：Xcode 打开工程直接构建
+open ThreeStarTV.xcodeproj
+
+# 方式二：命令行（xcodebuild 正常的环境）
+xcodebuild -project ThreeStarTV.xcodeproj -scheme ThreeStarTV -configuration Debug -arch arm64 build
+
+# 方式三：swiftc 直编（本仓库环境即如此构建，绕开损坏的 xcodebuild 插件）
+xcrun swiftc -target arm64-apple-macos13 -sdk "$(xcrun --show-sdk-path)" -Onone \
+  -o build/ThreeStarTV.app/Contents/MacOS/ThreeStarTV \
+  $(find ThreeStarTV -name '*.swift')
+codesign --force --sign - --options runtime build/ThreeStarTV.app
+```
+
+产物：`darwin/build/ThreeStarTV.app`（ad-hoc 签名 + Hardened Runtime，本机可直接运行）。
+
+### 配置存储
+
+配置位于 `~/Library/Application Support/ThreeStarTV/`：
+
+- `CameraConfig.json`：网格数量、错峰延时、每路地址/备注/锁定状态
+- `AppConfig.json`：语言、主题、自动取消静音、屏幕常亮、启动最大化、开机自启、网格全屏模式
+- `UrlFavorites.json`：网址收藏列表
